@@ -1,0 +1,6 @@
+*.cproj
+*.atsln
+.DS_Store
+*.ini
+Debug/
+Release/
