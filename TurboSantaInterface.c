@@ -16,7 +16,12 @@ int main(void)
 {
     /* Initialize the SAM system */
     SystemInit();
-
+	// Disable the WatchDog Timer
+	// Write a 1 to the WDDIS bit in the WDT_MR register (P322)
+	WDT->WDT_MR = WDT_MR_WDDIS;
+	
+	
+	
     while (1) 
     {
         //TODO:: Please write your application code 
