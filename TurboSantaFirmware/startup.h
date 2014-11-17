@@ -10,14 +10,17 @@
 
 #include "sam.h"
 
-// MOSCXTST = Main Crystal Oscillator Start-Up Time (P529)
+// MOSCXTST = Main Crystal Oscillator Start-Up Time (Page 529)
 // Specifies the number of Slow Clock cycles multiplied by 8 for the Main Crystal Oscillator start-up time.
 #define CKGR_MOR_MOSCXTST_VALUE (CKGR_MOR_MOSCXTST(0x8U))
 
 // Initialize the watchdog (In this case disable it)
 void initialize_watchdog(void);
 
-// Initialize the main crystal oscillator. This follows the 29.14 Programming Sequence on Page 513 of the SAM4S datasheet
+// Initialize the main crystal oscillator. This (more or less) follows the "29.14 Programming Sequence" on Page 513 of the SAM4S datasheet
 void initialize_xtal(void);
+
+// Initialize all of the clocks for the peripherals used.
+void initialize_pmc_clocks(void);
 
 #endif /* STARTUP_H_ */

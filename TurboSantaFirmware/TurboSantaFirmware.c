@@ -17,6 +17,7 @@ int main(void)
 	// Our board-specific configuration
 	initialize_watchdog();
 	initialize_xtal();
+	initialize_pmc_clocks();
 
     while (1) 
     {

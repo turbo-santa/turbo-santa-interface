@@ -9,15 +9,15 @@
 // Initialize the watchdog (In this case disable it)
 void initialize_watchdog(void) {
 	// Disable the Watchdog Timer
-	// WDT_MR = Watchdog Timer Mode Register (P322)
+	// WDT_MR = Watchdog Timer Mode Register (Page 322)
 	//		WDT_MR_WDDIS = Watchdog Disable (1 = Disables the Watchdog Timer.)
 	WDT->WDT_MR = WDT_MR_WDDIS;
 }
 
-// Initialize the main crystal oscillator. This (more or less) follows the 29.14 Programming Sequence on Page 513 of the SAM4S datasheet
+// Initialize the main crystal oscillator. This (more or less) follows the "29.14 Programming Sequence" on Page 513 of the SAM4S datasheet
 // With a 16MHz Crystal Oscillator connected to XIN and a 120MHz operational frequency.
 void initialize_xtal(void) {	
-	// CKGR_MOR = PMC Clock Generator Main Oscillator Register (P528)
+	// CKGR_MOR = PMC Clock Generator Main Oscillator Register (Page 528)
 	//		CKGR_MOR_KEY_PASSWD = You need a password to write to this register)
 	//		CKGR_MOR_MOSCXTST   = Specifies the number of Slow Clock cycles multiplied by 8 for the Main Crystal Oscillator start-up time.
 	//		CKGR_MOR_MOSCRCEN   = Main On-Chip RC Oscillator Enable (1 = The Main On-Chip RC Oscillator is enabled.)
@@ -31,7 +31,7 @@ void initialize_xtal(void) {
 	PMC->CKGR_MOR =  CKGR_MOR_KEY_PASSWD | CKGR_MOR_MOSCXTST_VALUE | CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN | CKGR_MOR_MOSCSEL;
 	// We need to delay until the MOSCXTS flag in PMC_SR is register is cleared
 	while(!(PMC->PMC_SR & PMC_SR_MOSCSELS)) {}
-	// PMC_MCKR = PMC Master Clock Register (P533)
+	// PMC_MCKR = PMC Master Clock Register (Page 533)
 	//		PMC_MCKR_CSS_Msk = Master Clock Source Selection
 	//		PMC_MCKR_CSS_MAIN_CLK = Main Clock is Selected
 	PMC->PMC_MCKR = (PMC->PMC_MCKR & ~(uint32_t)PMC_MCKR_CSS_Msk) | PMC_MCKR_CSS_MAIN_CLK;
@@ -59,4 +59,25 @@ void initialize_xtal(void) {
 	// We need to delay until the Main Clock is ready
 	while(!(PMC->PMC_SR & PMC_SR_MCKRDY)) {}
 	// We are now running at 120MHz
+}
+
+// Initialize all of the clocks for the peripherals used.
+void initialize_pmc_clocks(void) {
+	// PMC_PCER0: PMC Peripheral Clock Enable Register 0
+	// Only peripherals with ID's between 31 and 8 (inclusive) can 
+	// be enabled through writing to this register.
+	// All of our peripherals used fall into this range, with the exception of USB:
+	//	PWM: ID_PWM: 31
+	//	ADC: ID_ADC: 29
+	//	SPI: ID_SPI: 21
+	//	USART1: ID_USART1: 15
+	//	USART0: ID_USART0: 14
+	//	PIOC: ID_PIOC: 13
+	//	PIOB: ID_PIOB: 12
+	//	PIOA: ID_PIOA: 11
+	//	SMC: ID_SMC: 10
+	PMC_PCER0 = (1 << ID_PWM) | (1 << ID_ADC) | (1 << ID_SPI) | (1 << ID_USART1) | (1 << ID_USART0) | (1 << ID_PIOC) | (1 << ID_PIOB) | (1 << ID_PIOA) | (1 << ID_SMC);
+	
+	// USB is special. We need to configure PLLB as well: ID_UDP: 34
+	// TODO: do USB
 }
