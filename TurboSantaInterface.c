@@ -6,24 +6,19 @@
  */ 
 
 #include "sam.h"
+#include "startup.h"
 
-/**
- * \brief Application entry point.
- *
- * \return Unused (ANSI-C compatibility).
- */
+
 int main(void)
 {
     /* Initialize the SAM system */
     SystemInit();
-	// Disable the WatchDog Timer
-	// Write a 1 to the WDDIS bit in the WDT_MR register (P322)
-	WDT->WDT_MR = WDT_MR_WDDIS;
 	
-	
-	
+	// Our board-specific configuration
+	initialize_watchdog();
+	initialize_xtal();
+
     while (1) 
     {
-        //TODO:: Please write your application code 
     }
 }
