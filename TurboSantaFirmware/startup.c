@@ -63,8 +63,6 @@ void initialize_xtal(void) {
 
 // Initialize all of the clocks for the peripherals used.
 void initialize_pmc_clocks(void) {
-	// Disable write protection
-	PMC->PMC_WPMR = PMC_WPMR_WPKEY_PASSWD | PMC_WPMR_WPEN;
 	// PMC_PCER0: PMC Peripheral Clock Enable Register 0
 	// Only peripherals with ID's between 31 and 8 (inclusive) can 
 	// be enabled through writing to this register.
@@ -82,4 +80,8 @@ void initialize_pmc_clocks(void) {
 	
 	// USB is special. We need to configure PLLB as well: ID_UDP: 34
 	// TODO: do USB
+}
+
+void initialize_pio(void) {
+	
 }
