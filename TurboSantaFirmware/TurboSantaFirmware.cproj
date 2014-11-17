@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>TurboSantaInterface</AssemblyName>
-    <Name>TurboSantaInterface</Name>
-    <RootNamespace>TurboSantaInterface</RootNamespace>
+    <AssemblyName>TurboSantaFirmware</AssemblyName>
+    <Name>TurboSantaFirmware</Name>
+    <RootNamespace>TurboSantaFirmware</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -168,7 +168,13 @@
     <Compile Include="cmsis\src\system_sam4s.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="TurboSantaInterface.c">
+    <Compile Include="startup.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="startup.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="TurboSantaFirmware.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
@@ -176,8 +182,6 @@
     <Folder Include="cmsis\" />
     <Folder Include="cmsis\linkerScripts\" />
     <Folder Include="cmsis\src\" />
-    <Folder Include="drivers" />
-    <Folder Include="drivers\led" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cmsis\linkerScripts\sam4sa16c_flash.ld">

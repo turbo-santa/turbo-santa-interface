@@ -4,6 +4,7 @@
  * Created: 16 Nov 2014 8:08:51 PM
  * Author: Andrew Hennessy (ajb200@case.edu)
  */ 
+#include "startup.h"
 
 // Initialize the watchdog (In this case disable it)
 void initialize_watchdog(void) {

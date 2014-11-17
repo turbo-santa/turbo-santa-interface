@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Atmel Studio Solution File, Format Version 11.00
-Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "TurboSantaInterface", "TurboSantaInterface.cproj", "{0E9290B1-C697-4F0B-912B-D248AE8B0585}"
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "TurboSantaFirmware", "TurboSantaFirmware/TurboSantaFirmware.cproj", "{0E9290B1-C697-4F0B-912B-D248AE8B0585}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

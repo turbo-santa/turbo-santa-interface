@@ -2,3 +2,5 @@
 *.ini
 Debug/
 Release/
+*.log
+*.config

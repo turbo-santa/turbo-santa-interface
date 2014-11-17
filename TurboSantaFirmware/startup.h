@@ -8,6 +8,8 @@
 #ifndef STARTUP_H_
 #define STARTUP_H_
 
+#include "sam.h"
+
 // MOSCXTST = Main Crystal Oscillator Start-Up Time (P529)
 // Specifies the number of Slow Clock cycles multiplied by 8 for the Main Crystal Oscillator start-up time.
 #define CKGR_MOR_MOSCXTST_VALUE (CKGR_MOR_MOSCXTST(0x8U))
