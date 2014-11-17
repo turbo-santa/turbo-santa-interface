@@ -18,6 +18,7 @@ int main(void)
 	initialize_watchdog();
 	initialize_xtal();
 	initialize_pmc_clocks();
+	initialize_pio();
 
     while (1) 
     {
