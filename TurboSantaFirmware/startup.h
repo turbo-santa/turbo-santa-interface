@@ -9,6 +9,7 @@
 #define STARTUP_H_
 
 #include "sam.h"
+#include "board.h"
 
 // MOSCXTST = Main Crystal Oscillator Start-Up Time (Page 529)
 // Specifies the number of Slow Clock cycles multiplied by 8 for the Main Crystal Oscillator start-up time.
@@ -22,5 +23,9 @@ void initialize_xtal(void);
 
 // Initialize all of the clocks for the peripherals used.
 void initialize_pmc_clocks(void);
+
+// Initialize all of the PIO pins
+void initialize_pio(void);
+
 
 #endif /* STARTUP_H_ */
