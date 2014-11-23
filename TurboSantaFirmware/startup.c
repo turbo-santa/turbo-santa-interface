@@ -83,6 +83,19 @@ void initialize_pmc_clocks(void) {
 }
 
 void initialize_pio(void) {
+	// Step 1: Disable the built-in pull up resistors that are enabled by default for all used PIO pins.
+	// PIOx_PUDR is in effect regardless of the status of PIO_PDR (i.e. if control is still with PIO or a peripheral)
+	PIOA->PIO_PUDR = (TS_PWM_LED1_PIO) | (TS_PWM_LED2_PIO) | (TS_PWM_LED3_PIO) | (TS_FTDI_TX_PIO) | (TS_FTDI_RX_PIO) | (TS_FTDI_CTS_PIO) | (TS_FTDI_RTS_PIO) |
+					 (TS_IRDA_RX_PIO) | (TS_IRDA_TX_PIO) | (TS_LINK_SO_PIO) | (TS_LINK_SI_PIO) | (TS_LINK_SC_PIO) | (TS_LINK_SD_PIO) | (TS_LINK_ENA_PIO) |
+					 (TS_CART_AOE_PIO) | (TS_CART_ADIR_PIO) | (TS_CART_ADDR14_PIO) | (TS_CART_ADDR15_PIO) | (TS_CART_RST_PIO) | (TS_CART_CLK_PIO);
+	PIOB->PIO_PUDR = (TS_USB_DM_PIO) | (TS_USB_DP_PIO) | (TS_PWM_LED0_PIO) | (TS_CART_DOE_PIO) | (TS_CART_DDIR_PIO) | (TS_CART_VIN_PIO);
+	PIOC->PIO_PUDR = (TS_CART_DATA0_PIO) | (TS_CART_DATA1_PIO) | (TS_CART_DATA2_PIO) | (TS_CART_DATA3_PIO) | (TS_CART_DATA4_PIO) | (TS_CART_DATA5_PIO) | 
+					 (TS_CART_DATA6_PIO) | (TS_CART_DATA7_PIO) | (TS_CART_ADDR0_PIO) | (TS_CART_ADDR1_PIO) | (TS_CART_ADDR2_PIO) | (TS_CART_ADDR3_PIO) | 
+					 (TS_CART_ADDR4_PIO) | (TS_CART_ADDR5_PIO) | (TS_CART_ADDR6_PIO) | (TS_CART_ADDR7_PIO) | (TS_CART_ADDR8_PIO) | (TS_CART_ADDR9_PIO) | 
+					 (TS_CART_ADDR10_PIO) | (TS_CART_ADDR11_PIO) | (TS_CART_ADDR12_PIO) | (TS_CART_ADDR13_PIO) | (TS_CART_NWE_PIO) | (TS_CART_NRD_PIO) |
+					 (TS_CART_NCS0_PIO);
+		
+	
 	PIOA->PIO_OER = PIO_OER_P0;
 	PIOA->PIO_PER = PIO_PER_P0;
 	PIOA->PIO_PUDR = PIO_PUDR_P0;

@@ -138,7 +138,7 @@
 //	A14 on PA18 is A14 on PIO/SMC which is attached to Peripheral C 
 #define TS_CART_ADDR14_PIO	(1u << 14)
 //	A15 on PA19 is A15 on PIO/SMC which is attached to Peripheral C 
-#define TS_CART_ADDR14_PIO	(1u << 15)
+#define TS_CART_ADDR15_PIO	(1u << 15)
 
 // CGB Cartridge Control Pins
 //	WR  on PC8  is NWE  on PIO/SMC which is attached to Peripheral A
