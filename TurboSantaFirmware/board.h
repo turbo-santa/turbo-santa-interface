@@ -19,14 +19,7 @@
 #define BOARD_H_
 
 #include "sam.h"
-
-#define PERIPHERAL_A	 0
-#define PERIPHERAL_B	 1
-#define PERIPHERAL_C	 2
-#define PERIPHERAL_D	 3
-#define PERIPHERAL_SYS	 4
-#define PERIPHERAL_GPIO	 5
-#define PERIPHERAL_EXTRA 6
+#include "peripherals/ts_pio.h"
 
 // USB Pins:
 //	Data- on PB10 is DDM on UDP (System Peripheral)
@@ -62,7 +55,7 @@
 #define TS_PWM_LED3_CONTROLLER		PIOA
 #define TS_PWM_LED3_PERIPHERAL		PERIPHERAL_A
 #define TS_PWM_LED3_PIO_NUM			2
-#define TS_PWM_LED3_PIO				(1u << TS_PWM_LED2_PIO_NUM)
+#define TS_PWM_LED3_PIO				(1u << TS_PWM_LED3_PIO_NUM)
 //	Note: PWM is attached to Interrupt PWM which has an ID of 31
 
 // FTDI UART-USB Bridge Pins
