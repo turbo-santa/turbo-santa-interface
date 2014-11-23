@@ -98,8 +98,14 @@ void initialize_pio(void) {
 	PIOA->PIO_PUDR = PIO_PUDR_P2;
 	PIOA->PIO_SODR = PIO_SODR_P2;
 	
-	PIOB->PIO_OER = PIO_OER_P14;
+	/*PIOB->PIO_OER = PIO_OER_P14;
 	PIOB->PIO_PER = PIO_PER_P14;
 	PIOB->PIO_PUDR = PIO_PUDR_P14;
-	PIOB->PIO_SODR = PIO_SODR_P14;
+	PIOB->PIO_SODR = PIO_SODR_P14;*/
+	
+	// This should disable control of LED3 from PIO and enable control from PWM
+	PIOB->PIO_PUDR = PIO_PUDR_P14;
+	PIOB->PIO_PDR = PIO_PDR_P14;
+	PIOB->PIO_ABCDSR[1] = PIO_ABCDSR_P14;
+	
 }
