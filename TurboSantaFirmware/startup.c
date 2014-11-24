@@ -95,29 +95,79 @@ void initialize_pio(void) {
 					 (TS_CART_ADDR10_PIO) | (TS_CART_ADDR11_PIO) | (TS_CART_ADDR12_PIO) | (TS_CART_ADDR13_PIO) | (TS_CART_NWE_PIO) | (TS_CART_NRD_PIO) |
 					 (TS_CART_NCS0_PIO);
 		
-	configure_pin_as_pio_output(TS_PWM_LED0_CONTROLLER, TS_PWM_LED0_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED1_CONTROLLER, TS_PWM_LED1_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER, TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER, TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
+	configure_pin_as_pio_output(TS_PWM_LED0_CONTROLLER,  TS_PWM_LED0_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_PWM_LED1_CONTROLLER,  TS_PWM_LED1_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER,  TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER,  TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
 	
 	
-	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER, TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
-	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER, TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
-	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER, TS_CART_AOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER,  TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER,  TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER,  TS_CART_AOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
 	
 	// The following PIO GPIO pins will have no affect until the above enable pins are activated.
-	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
-	configure_pin_as_pio_output(TS_CART_ADIR_CONTROLLER, TS_CART_ADIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
-	configure_pin_as_pio_output(TS_CART_RST_CONTROLLER,  TS_CART_RST_PIO,  INITIAL_STATE_LOW);	// Low = GameBoy Cart is in Reset Mode. High = Active Mode
-	configure_pin_as_pio_output(TS_CART_CLK_CONTROLLER,  TS_CART_CLK_PIO,  INITIAL_STATE_LOW);	// An unused pin to provide a clock signal to the GameBoy Cart
-	configure_pin_as_pio_output(TS_LINK_SD_CONTROLLER,   TS_LINK_SD_PIO,   INITIAL_STATE_LOW);	// An unused pin to exchange data on the EXT port
-	configure_pin_as_pio_input(TS_CART_VIN_CONTROLLER,   TS_CART_VIN_PIO);						// An unused pin to provide us with a fifth channel of audio on the GameBoy Cart.
+	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
+	configure_pin_as_pio_output(TS_CART_ADIR_CONTROLLER,  TS_CART_ADIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
+	configure_pin_as_pio_output(TS_CART_RST_CONTROLLER,   TS_CART_RST_PIO,  INITIAL_STATE_LOW);	// Low = GameBoy Cart is in Reset Mode. High = Active Mode
+	configure_pin_as_pio_output(TS_CART_CLK_CONTROLLER,   TS_CART_CLK_PIO,  INITIAL_STATE_LOW);	// An unused pin to provide a clock signal to the GameBoy Cart
+	configure_pin_as_pio_output(TS_LINK_SD_CONTROLLER,    TS_LINK_SD_PIO,   INITIAL_STATE_LOW);	// An unused pin to exchange data on the EXT port
+	configure_pin_as_pio_input(TS_CART_VIN_CONTROLLER,    TS_CART_VIN_PIO);						// An unused pin to provide us with a fifth channel of audio on the GameBoy Cart.
 	
+	// Attach the USB pins to the USB interface
+	//configure_pin_as_peripheral(TS_USB_DM_CONTROLLER,     TS_USB_DM_PIO,       TS_USB_DM_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_USB_DP_CONTROLLER,     TS_USB_DP_PIO,       TS_USB_DP_PERIPHERAL);
 	
+	// Attach the LEDs to the PWM interface
+	//configure_pin_as_peripheral(TS_PWM_LED0_CONTROLLER,   TS_PWM_LED0_PIO,     TS_PWM_LED0_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_PWM_LED1_CONTROLLER,   TS_PWM_LED1_PIO,     TS_PWM_LED1_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_PWM_LED2_CONTROLLER,   TS_PWM_LED2_PIO,     TS_PWM_LED2_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_PWM_LED3_CONTROLLER,   TS_PWM_LED3_PIO,     TS_PWM_LED3_PERIPHERAL);
+		
+	// Attach the pins connected to the FTDI converter to the USART0 interface
+	//configure_pin_as_peripheral(TS_FTDI_TX_CONTROLLER,    TS_FTDI_TX_PIO,      TS_FTDI_TX_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_FTDI_RX_CONTROLLER,    TS_FTDI_RX_PIO,      TS_FTDI_RX_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_FTDI_CTS_CONTROLLER,   TS_FTDI_CTS_PIO,     TS_FTDI_CTS_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_FTDI_RTS_CONTROLLER,   TS_FTDI_RTS_PIO,     TS_FTDI_RTS_PERIPHERAL);
 	
-	// This should disable control of LED3 from PIO and enable control from PWM
-	//PIOB->PIO_PUDR = PIO_PUDR_P14;
-	//PIOB->PIO_PDR = PIO_PDR_P14;
-	//PIOB->PIO_ABCDSR[1] = PIO_ABCDSR_P14;*/
+	// Attach the pins connected to the IR converter to the USART1 interface
+	//configure_pin_as_peripheral(TS_IRDA_RX_CONTROLLER,    TS_IRDA_RX_PIO,      TS_IRDA_RX_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_IRDA_TX_CONTROLLER,    TS_IRDA_TX_PIO,      TS_IRDA_TX_PERIPHERAL);
 	
+	// Attach the pins connected to the EXT/Link port to the SPI interface
+	//configure_pin_as_peripheral(TS_LINK_SO_CONTROLLER,    TS_LINK_SO_PIO,	   TS_LINK_SO_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_LINK_SI_CONTROLLER,    TS_LINK_SI_PIO,	   TS_LINK_SI_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_LINK_SC_CONTROLLER,    TS_LINK_SC_PIO,	   TS_LINK_SC_PERIPHERAL);
+	
+	// Attach the pins connected to the Game Cart's Data Bus to the SMC interface
+	//configure_pin_as_peripheral(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO,   TS_CART_DATA0_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO,   TS_CART_DATA1_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO,   TS_CART_DATA2_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO,   TS_CART_DATA3_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO,   TS_CART_DATA4_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO,   TS_CART_DATA5_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO,   TS_CART_DATA6_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO,   TS_CART_DATA7_PERIPHERAL);
+	
+	// Attach the pins connected to the Game Cart's Address Bus to the SMC interface
+	//configure_pin_as_peripheral(TS_CART_ADDR0_CONTROLLER,  TS_CART_ADDR0_PIO,  TS_CART_ADDR0_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR1_CONTROLLER,  TS_CART_ADDR1_PIO,  TS_CART_ADDR1_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR2_CONTROLLER,  TS_CART_ADDR2_PIO,  TS_CART_ADDR2_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR3_CONTROLLER,  TS_CART_ADDR3_PIO,  TS_CART_ADDR3_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR4_CONTROLLER,  TS_CART_ADDR4_PIO,  TS_CART_ADDR4_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR5_CONTROLLER,  TS_CART_ADDR5_PIO,  TS_CART_ADDR5_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR6_CONTROLLER,  TS_CART_ADDR6_PIO,  TS_CART_ADDR6_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR7_CONTROLLER,  TS_CART_ADDR7_PIO,  TS_CART_ADDR7_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR8_CONTROLLER,  TS_CART_ADDR8_PIO,  TS_CART_ADDR8_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR9_CONTROLLER,  TS_CART_ADDR9_PIO,  TS_CART_ADDR9_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR10_CONTROLLER, TS_CART_ADDR10_PIO, TS_CART_ADDR10_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR11_CONTROLLER, TS_CART_ADDR11_PIO, TS_CART_ADDR11_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR12_CONTROLLER, TS_CART_ADDR12_PIO, TS_CART_ADDR12_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR13_CONTROLLER, TS_CART_ADDR13_PIO, TS_CART_ADDR13_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR14_CONTROLLER, TS_CART_ADDR14_PIO, TS_CART_ADDR14_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_ADDR15_CONTROLLER, TS_CART_ADDR15_PIO, TS_CART_ADDR15_PERIPHERAL);
+	
+	// Attach the pins connected to the Game Cart's Control Bus to the SMC interface
+	//configure_pin_as_peripheral(TS_CART_NWE_CONTROLLER,    TS_CART_NWE_PIO,    TS_CART_NWE_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_NRD_CONTROLLER,    TS_CART_NRD_PIO,    TS_CART_NRD_PERIPHERAL);
+	//configure_pin_as_peripheral(TS_CART_NCS0_CONTROLLER,   TS_CART_NCS0_PIO,   TS_CART_NCS0_PERIPHERAL);
 }
