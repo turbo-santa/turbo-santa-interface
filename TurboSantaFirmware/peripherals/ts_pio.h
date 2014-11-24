@@ -24,6 +24,9 @@
 #define INITIAL_STATE_HIGH 1
 
 void configure_pin_as_pio_output(Pio* controller, uint32_t pin, uint8_t initial_state);
+void configure_pin_as_pio_input(Pio* controller, uint32_t pin);
+
+
 void set_pin_high(Pio* controller, uint32_t pin);
 void set_pin_low(Pio* controller, uint32_t pin);
 

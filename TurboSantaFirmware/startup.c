@@ -100,6 +100,21 @@ void initialize_pio(void) {
 	configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER, TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
 	configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER, TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
 	
+	
+	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER, TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER, TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER, TS_CART_AOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
+	
+	// The following PIO GPIO pins will have no affect until the above enable pins are activated.
+	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
+	configure_pin_as_pio_output(TS_CART_ADIR_CONTROLLER, TS_CART_ADIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
+	configure_pin_as_pio_output(TS_CART_RST_CONTROLLER,  TS_CART_RST_PIO,  INITIAL_STATE_LOW);	// Low = GameBoy Cart is in Reset Mode. High = Active Mode
+	configure_pin_as_pio_output(TS_CART_CLK_CONTROLLER,  TS_CART_CLK_PIO,  INITIAL_STATE_LOW);	// An unused pin to provide a clock signal to the GameBoy Cart
+	configure_pin_as_pio_output(TS_LINK_SD_CONTROLLER,   TS_LINK_SD_PIO,   INITIAL_STATE_LOW);	// An unused pin to exchange data on the EXT port
+	configure_pin_as_pio_input(TS_CART_VIN_CONTROLLER,   TS_CART_VIN_PIO);						// An unused pin to provide us with a fifth channel of audio on the GameBoy Cart.
+	
+	
+	
 	// This should disable control of LED3 from PIO and enable control from PWM
 	//PIOB->PIO_PUDR = PIO_PUDR_P14;
 	//PIOB->PIO_PDR = PIO_PDR_P14;

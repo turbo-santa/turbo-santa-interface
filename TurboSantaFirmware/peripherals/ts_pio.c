@@ -15,6 +15,13 @@ void configure_pin_as_pio_output(Pio* controller, uint32_t pin, uint8_t initial_
 	(initial_state) ? set_pin_high(controller, pin) : set_pin_low(controller, pin);
 }
 
+void configure_pin_as_pio_input(Pio* controller, uint32_t pin) {
+	// PIO_OER  = Output Disable Register (1 = Enables the input function of the pin)
+	controller->PIO_ODR = pin;
+	// PIO_PER  = PIO Enable Register (1 = Enable PIO control of the corresponding pin, disables peripheral control of the pin)
+	controller->PIO_PER = pin;
+}
+
 void set_pin_high(Pio* controller, uint32_t pin) {
 	controller->PIO_SODR = pin;
 }
