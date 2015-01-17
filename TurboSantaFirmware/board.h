@@ -19,8 +19,10 @@
 #define BOARD_H_
 
 #include "sam.h"
+#include <stdio.h>
 #include "peripherals/ts_pio.h"
 #include "peripherals/ts_pwm.h"
+#include "peripherals/ts_usart_ftdi.h"
 
 // USB Pins:
 //	Data- on PB10 is DDM on UDP (System Peripheral)

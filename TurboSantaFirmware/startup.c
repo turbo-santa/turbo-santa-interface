@@ -126,6 +126,7 @@ void initialize_pmc_clocks(void) {
 	//	PIOB: ID_PIOB: 12
 	//	PIOA: ID_PIOA: 11
 	//	SMC: ID_SMC: 10
+	
 	PMC->PMC_PCER0 = (1 << ID_PWM) | (1 << ID_ADC) | (1 << ID_SPI) | (1 << ID_USART1) | (1 << ID_USART0) | (1 << ID_PIOC) | (1 << ID_PIOB) | (1 << ID_PIOA) | (1 << ID_SMC);
 	
 	// USB is special. We need to configure PLLB as well: ID_UDP: 34
@@ -153,7 +154,7 @@ void initialize_pio(void) {
 	
 	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER,  TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
 	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER,  TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
-	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER,  TS_CART_AOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
+	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER,  TS_CART_AOE_PIO, INITIAL_STATE_LOW);	// Disable the Cart Port voltage shifter until we're ready
 	
 	// The following PIO GPIO pins will have no affect until the above enable pins are activated.
 	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
@@ -174,10 +175,10 @@ void initialize_pio(void) {
 	configure_pin_as_peripheral(TS_PWM_LED3_CONTROLLER,   TS_PWM_LED3_PIO,     TS_PWM_LED3_PERIPHERAL);
 		
 	// Attach the pins connected to the FTDI converter to the USART0 interface
-	//configure_pin_as_peripheral(TS_FTDI_TX_CONTROLLER,    TS_FTDI_TX_PIO,      TS_FTDI_TX_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_FTDI_RX_CONTROLLER,    TS_FTDI_RX_PIO,      TS_FTDI_RX_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_FTDI_CTS_CONTROLLER,   TS_FTDI_CTS_PIO,     TS_FTDI_CTS_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_FTDI_RTS_CONTROLLER,   TS_FTDI_RTS_PIO,     TS_FTDI_RTS_PERIPHERAL);
+	configure_pin_as_peripheral(TS_FTDI_TX_CONTROLLER,    TS_FTDI_TX_PIO,      TS_FTDI_TX_PERIPHERAL);
+	configure_pin_as_peripheral(TS_FTDI_RX_CONTROLLER,    TS_FTDI_RX_PIO,      TS_FTDI_RX_PERIPHERAL);
+	configure_pin_as_peripheral(TS_FTDI_CTS_CONTROLLER,   TS_FTDI_CTS_PIO,     TS_FTDI_CTS_PERIPHERAL);
+	configure_pin_as_peripheral(TS_FTDI_RTS_CONTROLLER,   TS_FTDI_RTS_PIO,     TS_FTDI_RTS_PERIPHERAL);
 	
 	// Attach the pins connected to the IR converter to the USART1 interface
 	//configure_pin_as_peripheral(TS_IRDA_RX_CONTROLLER,    TS_IRDA_RX_PIO,      TS_IRDA_RX_PERIPHERAL);
@@ -220,6 +221,13 @@ void initialize_pio(void) {
 	//configure_pin_as_peripheral(TS_CART_NWE_CONTROLLER,    TS_CART_NWE_PIO,    TS_CART_NWE_PERIPHERAL);
 	//configure_pin_as_peripheral(TS_CART_NRD_CONTROLLER,    TS_CART_NRD_PIO,    TS_CART_NRD_PERIPHERAL);
 	//configure_pin_as_peripheral(TS_CART_NCS0_CONTROLLER,   TS_CART_NCS0_PIO,   TS_CART_NCS0_PERIPHERAL);
+	
+	/*while (1) {
+		TS_CART_CLK_CONTROLLER->PIO_SODR = TS_CART_CLK_PIO;
+		__asm__ volatile("nop");
+		TS_CART_CLK_CONTROLLER->PIO_CODR = TS_CART_CLK_PIO;
+		__asm__ volatile("nop");
+	}*/
 }
 
 void initialize_pwm(void) {
@@ -234,4 +242,13 @@ void initialize_pwm(void) {
 	}
 	// Make sure all the PWM outputs are enabled
 	PWM->PWM_ENA = PWM_ENA_CHID0 | PWM_ENA_CHID1 | PWM_ENA_CHID2 | PWM_ENA_CHID3;
+}
+
+void initialize_usart0() {
+	USART0->US_CR = US_CR_RSTRX | US_CR_RSTTX;
+	
+	USART0->US_MR = US_MR_USART_MODE_NORMAL | US_MR_CHRL_8_BIT | US_MR_NBSTOP_1_BIT | US_MR_PAR_EVEN;
+	USART0->US_BRGR = 77;
+	
+	USART0->US_CR = US_CR_RXEN | US_CR_TXEN;
 }

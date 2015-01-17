@@ -20,8 +20,16 @@ int main(void)
 	initialize_pmc_clocks();
 	initialize_pio();
 	initialize_pwm();
+	initialize_usart0();
+	
+	usart0_ftdi_putstring("Welcome to the TurboSanta Interface GameBoy (Color) ROM Dumper!\r\n");
+	usart0_ftdi_putstring("\r\n");
+	usart0_ftdi_putstring("Press any key to continue...");
 
     while (1) 
     {
+			usart0_ftdi_putstring("Welcome to the TurboSanta Interface GameBoy (Color) ROM Dumper!\r\n");
+			usart0_ftdi_putstring("\r\n");
+			usart0_ftdi_putstring("Press any key to continue...\r\n");
     }
 }

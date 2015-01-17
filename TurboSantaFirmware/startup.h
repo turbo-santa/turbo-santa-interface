@@ -30,4 +30,9 @@ void initialize_pio(void);
 // Initialize the PWM functions for the front LEDs
 void initialize_pwm(void);
 
+// Initialize the USART0 interface for the FTDI comms
+void initialize_usart0();
+
+
+
 #endif /* STARTUP_H_ */
