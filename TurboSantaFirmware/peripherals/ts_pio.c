@@ -70,3 +70,7 @@ void set_pin_high(Pio* controller, uint32_t pin) {
 void set_pin_low(Pio* controller, uint32_t pin) {
 	controller->PIO_CODR = pin;
 }
+
+uint32_t read_pin_level(Pio* controller, uint32_t pin) {
+	return controller->PIO_PDSR & (pin);
+}

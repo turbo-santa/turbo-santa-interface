@@ -23,6 +23,10 @@
 #include "peripherals/ts_pio.h"
 #include "peripherals/ts_pwm.h"
 #include "peripherals/ts_usart_ftdi.h"
+#include "peripherals/ts_cart.h"
+
+#define NOPNOPNOPTOAST __asm__ volatile ("nop");
+
 
 // USB Pins:
 //	Data- on PB10 is DDM on UDP (System Peripheral)
@@ -272,13 +276,13 @@
 #define TS_CART_ADDR13_PIO          (1u << TS_CART_ADDR13_PIO_NUM)
 //	A14 on PA18 is A14 on PIO/SMC which is attached to Peripheral C 
 #define TS_CART_ADDR14_CONTROLLER   PIOA
-#define TS_CART_ADDR14_PERIPHERAL   PERIPHERAL_A
-#define TS_CART_ADDR14_PIO_NUM      14
+#define TS_CART_ADDR14_PERIPHERAL   PERIPHERAL_C
+#define TS_CART_ADDR14_PIO_NUM      18
 #define TS_CART_ADDR14_PIO          (1u << TS_CART_ADDR14_PIO_NUM)
 //	A15 on PA19 is A15 on PIO/SMC which is attached to Peripheral C 
 #define TS_CART_ADDR15_CONTROLLER   PIOA
-#define TS_CART_ADDR15_PERIPHERAL   PERIPHERAL_A
-#define TS_CART_ADDR15_PIO_NUM      15
+#define TS_CART_ADDR15_PERIPHERAL   PERIPHERAL_C
+#define TS_CART_ADDR15_PIO_NUM      19
 #define TS_CART_ADDR15_PIO          (1u << TS_CART_ADDR15_PIO_NUM)
 
 // CGB Cartridge Control Pins
@@ -296,7 +300,7 @@
 #define TS_CART_NCS0_CONTROLLER		PIOC
 #define TS_CART_NCS0_PERIPHERAL		PERIPHERAL_A
 #define TS_CART_NCS0_PIO_NUM		14
-#define TS_CART_NCS0_PIO			(1u << TS_CART_RST_PIO_NUM)
+#define TS_CART_NCS0_PIO			(1u << TS_CART_NCS0_PIO_NUM)
 //	VIN on PB3  is AD7  on ADC (Extra Function/Peripheral)
 #define TS_CART_VIN_CONTROLLER		PIOB
 #define TS_CART_VIN_PERIPHERAL		PERIPHERAL_EXTRA

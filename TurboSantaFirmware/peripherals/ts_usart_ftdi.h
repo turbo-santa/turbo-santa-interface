@@ -13,7 +13,8 @@
 
 void usart0_ftdi_putchar(const char c);
 void usart0_ftdi_putstring(const char *c);
-
+char digit_to_char(int digit);
+void print_hex_byte(int hex);
 
 
 #endif /* TS_USART_FTDI_H_ */

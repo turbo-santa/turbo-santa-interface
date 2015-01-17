@@ -29,6 +29,7 @@ void configure_pin_as_peripheral(Pio* controller, uint32_t pin, uint8_t peripher
 
 void set_pin_high(Pio* controller, uint32_t pin);
 void set_pin_low(Pio* controller, uint32_t pin);
+uint32_t read_pin_level(Pio* controller, uint32_t pin);
 
 
 

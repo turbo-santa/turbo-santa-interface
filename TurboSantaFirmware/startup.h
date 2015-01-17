@@ -33,6 +33,7 @@ void initialize_pwm(void);
 // Initialize the USART0 interface for the FTDI comms
 void initialize_usart0();
 
+void initialize_cart_pio();
 
 
 #endif /* STARTUP_H_ */

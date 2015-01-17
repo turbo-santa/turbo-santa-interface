@@ -152,17 +152,17 @@ void initialize_pio(void) {
 	//configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER,  TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
 	//configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER,  TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
 	
-	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER,  TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
-	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER,  TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
-	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER,  TS_CART_AOE_PIO, INITIAL_STATE_LOW);	// Disable the Cart Port voltage shifter until we're ready
+	//configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER,  TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Low = Disabled; High = Active
+	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER,  TS_CART_DOE_PIO, INITIAL_STATE_LOW);	// Low = Active; High = Disabled
+	configure_pin_as_pio_output(TS_CART_AOE_CONTROLLER,  TS_CART_AOE_PIO, INITIAL_STATE_LOW);	// Low = Active; High = Disabled
 	
 	// The following PIO GPIO pins will have no affect until the above enable pins are activated.
-	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
+	configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_LOW);	    // Set the voltage shifter to operate from the B bus to the A bus ///TODO: Low
 	configure_pin_as_pio_output(TS_CART_ADIR_CONTROLLER,  TS_CART_ADIR_PIO, INITIAL_STATE_HIGH);	// Set the voltage shifter to operate from the A bus to the B bus
-	configure_pin_as_pio_output(TS_CART_RST_CONTROLLER,   TS_CART_RST_PIO,  INITIAL_STATE_LOW);	// Low = GameBoy Cart is in Reset Mode. High = Active Mode
-	configure_pin_as_pio_output(TS_CART_CLK_CONTROLLER,   TS_CART_CLK_PIO,  INITIAL_STATE_LOW);	// An unused pin to provide a clock signal to the GameBoy Cart
-	configure_pin_as_pio_output(TS_LINK_SD_CONTROLLER,    TS_LINK_SD_PIO,   INITIAL_STATE_LOW);	// An unused pin to exchange data on the EXT port
-	configure_pin_as_pio_input(TS_CART_VIN_CONTROLLER,    TS_CART_VIN_PIO);						// An unused pin to provide us with a fifth channel of audio on the GameBoy Cart.
+	configure_pin_as_pio_output(TS_CART_RST_CONTROLLER,   TS_CART_RST_PIO,  INITIAL_STATE_HIGH);	// Low = GameBoy Cart is in Reset Mode. High = Active Mode
+	configure_pin_as_pio_output(TS_CART_CLK_CONTROLLER,   TS_CART_CLK_PIO,  INITIAL_STATE_LOW);   	// An unused pin to provide a clock signal to the GameBoy Cart
+	//configure_pin_as_pio_output(TS_LINK_SD_CONTROLLER,    TS_LINK_SD_PIO,   INITIAL_STATE_LOW); 	// An unused pin to exchange data on the EXT port
+	configure_pin_as_pio_input(TS_CART_VIN_CONTROLLER,    TS_CART_VIN_PIO);						    // An unused pin to provide us with a fifth channel of audio on the GameBoy Cart.
 	
 	// Attach the USB pins to the USB interface
 	//configure_pin_as_peripheral(TS_USB_DM_CONTROLLER,     TS_USB_DM_PIO,       TS_USB_DM_PERIPHERAL);
@@ -251,4 +251,45 @@ void initialize_usart0() {
 	USART0->US_BRGR = 77;
 	
 	USART0->US_CR = US_CR_RXEN | US_CR_TXEN;
+}
+
+void initialize_cart_pio() {
+	configure_pin_as_pio_output(TS_CART_ADDR0_CONTROLLER,  TS_CART_ADDR0_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR1_CONTROLLER,  TS_CART_ADDR1_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR2_CONTROLLER,  TS_CART_ADDR2_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR3_CONTROLLER,  TS_CART_ADDR3_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR4_CONTROLLER,  TS_CART_ADDR4_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR5_CONTROLLER,  TS_CART_ADDR5_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR6_CONTROLLER,  TS_CART_ADDR6_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR7_CONTROLLER,  TS_CART_ADDR7_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR8_CONTROLLER,  TS_CART_ADDR8_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR9_CONTROLLER,  TS_CART_ADDR9_PIO,  INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR10_CONTROLLER, TS_CART_ADDR10_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR11_CONTROLLER, TS_CART_ADDR11_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR12_CONTROLLER, TS_CART_ADDR12_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR13_CONTROLLER, TS_CART_ADDR13_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR14_CONTROLLER, TS_CART_ADDR14_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_ADDR15_CONTROLLER, TS_CART_ADDR15_PIO, INITIAL_STATE_LOW);
+	
+	configure_pin_as_pio_input(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO);
+	
+	/*configure_pin_as_pio_output(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO, INITIAL_STATE_LOW); //TODO undo*/
+	
+	configure_pin_as_pio_output(TS_CART_NWE_CONTROLLER,    TS_CART_NWE_PIO,    INITIAL_STATE_HIGH);	// WR -> High
+	configure_pin_as_pio_output(TS_CART_NRD_CONTROLLER,    TS_CART_NRD_PIO,    INITIAL_STATE_LOW);	// RD -> Low
+	configure_pin_as_pio_output(TS_CART_NCS0_CONTROLLER,   TS_CART_NCS0_PIO,   INITIAL_STATE_LOW);	// CS SRAM -> Low
 }

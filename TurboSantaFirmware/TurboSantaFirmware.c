@@ -21,15 +21,64 @@ int main(void)
 	initialize_pio();
 	initialize_pwm();
 	initialize_usart0();
+	initialize_cart_pio();
 	
 	usart0_ftdi_putstring("Welcome to the TurboSanta Interface GameBoy (Color) ROM Dumper!\r\n");
 	usart0_ftdi_putstring("\r\n");
 	usart0_ftdi_putstring("Press any key to continue...");
 
-    while (1) 
-    {
-			usart0_ftdi_putstring("Welcome to the TurboSanta Interface GameBoy (Color) ROM Dumper!\r\n");
-			usart0_ftdi_putstring("\r\n");
-			usart0_ftdi_putstring("Press any key to continue...\r\n");
+	uint16_t address = 0x0100;
+
+    while (1) {
+			set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
+			
+			set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
+			set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+			set_pin_low(TS_CART_CLK_CONTROLLER, TS_CART_CLK_PIO);
+			
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			
+			write_to_address(address);
+			
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			NOPNOPNOPTOAST
+			
+			volatile uint8_t data = read_from_data();
+			
+			address++;
+			
     }
 }
