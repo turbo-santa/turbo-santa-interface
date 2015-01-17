@@ -14,6 +14,12 @@ void initialize_watchdog(void) {
 	WDT->WDT_MR = WDT_MR_WDDIS;
 }
 
+
+
+#define SYS_BOARD_OSCOUNT   (CKGR_MOR_MOSCXTST(0x8U))
+#define SYS_BOARD_MCKR      (PMC_MCKR_PRES_CLK_2 | PMC_MCKR_CSS_PLLA_CLK)
+#define SYS_BOARD_PLLAR     (CKGR_PLLAR_ONE | CKGR_PLLAR_MULA(0x05U) | CKGR_PLLAR_PLLACOUNT(0x3fU) | CKGR_PLLAR_DIVA(0x1U))
+
 // Initialize the main crystal oscillator. This (more or less) follows the "29.14 Programming Sequence" on Page 513 of the SAM4S datasheet
 // With a 16MHz Crystal Oscillator connected to XIN and a 120MHz operational frequency.
 void initialize_xtal(void) {	
@@ -22,7 +28,7 @@ void initialize_xtal(void) {
 	//		CKGR_MOR_MOSCXTST   = Specifies the number of Slow Clock cycles multiplied by 8 for the Main Crystal Oscillator start-up time.
 	//		CKGR_MOR_MOSCRCEN   = Main On-Chip RC Oscillator Enable (1 = The Main On-Chip RC Oscillator is enabled.)
 	//		CKGR_MOR_MOSCXTEN   = Main Crystal Oscillator Enable (1 = The Main Crystal Oscillator is enabled.)
-	PMC->CKGR_MOR =  CKGR_MOR_KEY_PASSWD | CKGR_MOR_MOSCXTST_VALUE | CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN;
+	/*PMC->CKGR_MOR =  CKGR_MOR_KEY_PASSWD | CKGR_MOR_MOSCXTST_VALUE | CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN;
 	// We need to delay until the MOSCXTS flag in the PMC_SR register is cleared
 	while(!(PMC->PMC_SR & PMC_SR_MOSCXTS)) {}
 	// Switch over to the 16MHz external oscillator
@@ -57,7 +63,52 @@ void initialize_xtal(void) {
 	PMC->PMC_MCKR = PMC_MCKR_CSS_MAIN_CLK;
 	// We need to delay until the Main Clock is ready
 	while(!(PMC->PMC_SR & PMC_SR_MCKRDY)) {}
-	// We are now running at 120MHz
+	// We are now running at 120MHz*/
+	
+	
+	
+	 /* Initialize main oscillator */
+	 if ( !(PMC->CKGR_MOR & CKGR_MOR_MOSCSEL) )
+	 {
+		 PMC->CKGR_MOR = CKGR_MOR_KEY_PASSWD | SYS_BOARD_OSCOUNT | CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN;
+
+		 while ( !(PMC->PMC_SR & PMC_SR_MOSCXTS) )
+		 {
+		 }
+	 }
+
+	 /* Switch to 3-20MHz Xtal oscillator */
+	 PMC->CKGR_MOR = CKGR_MOR_KEY_PASSWD | SYS_BOARD_OSCOUNT | CKGR_MOR_MOSCRCEN | CKGR_MOR_MOSCXTEN | CKGR_MOR_MOSCSEL;
+
+	 while ( !(PMC->PMC_SR & PMC_SR_MOSCSELS) )
+	 {
+	 }
+
+	 PMC->PMC_MCKR = (PMC->PMC_MCKR & ~(uint32_t)PMC_MCKR_CSS_Msk) | PMC_MCKR_CSS_MAIN_CLK;
+
+	 while ( !(PMC->PMC_SR & PMC_SR_MCKRDY) )
+	 {
+	 }
+
+	 
+	 PMC->CKGR_PLLAR = SYS_BOARD_PLLAR;
+	 while ( !(PMC->PMC_SR & PMC_SR_LOCKA) )
+	 {
+	 }
+
+	 
+	 PMC->PMC_MCKR = (SYS_BOARD_MCKR & ~PMC_MCKR_CSS_Msk) | PMC_MCKR_CSS_MAIN_CLK;
+	 while ( !(PMC->PMC_SR & PMC_SR_MCKRDY) )
+	 {
+	 }
+
+	 
+	 PMC->PMC_MCKR = SYS_BOARD_MCKR;
+	 while ( !(PMC->PMC_SR & PMC_SR_MCKRDY) )
+	 {
+	 }
+
+	SystemCoreClockUpdate();
 }
 
 // Initialize all of the clocks for the peripherals used.
