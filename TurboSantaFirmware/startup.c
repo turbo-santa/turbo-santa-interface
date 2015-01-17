@@ -40,11 +40,10 @@ void initialize_xtal(void) {
 	// Initialize PLL A
 	// CKGR_PLLAR = PMC Clock Generator PLLA Register
 	//		CKGR_PLLAR_ONE       = Bit 29 must always be set to 1 when programming the CKGR_PLLAR register.
-	//		CKGR_PLLAR_MULA      = The PLLA Clock Frequency is the PLLA input frequency multiplied by 15
+	//		CKGR_PLLAR_MULA      = The PLLA Clock Frequency is the PLLA input frequency multiplied by 13
 	//		CKGR_PLLAR_PLLACOUNT = Specifies the number of Slow Clock cycles before the LOCKA bit is set in PMC_SR after CKGR_PLLAR is written.
-	//		CKGR_PLLAR_DIVA      = PLLA Front_End Divider (2 = Divide by 2 and PLLA is enabled)
-	// The net result is that PLLA is configured to run at 120MHz because 16MHz / 2 = 8MHz; 8MHz * 15 = 120MHz
-	PMC->CKGR_PLLAR = CKGR_PLLAR_ONE | CKGR_PLLAR_MULA(0xFU) | CKGR_PLLAR_PLLACOUNT(0x3fU) | CKGR_PLLAR_DIVA(0x2U);
+	//		CKGR_PLLAR_DIVA      = PLLA Front_End Divider (1 = Divide by 1 and PLLA is enabled)
+	PMC->CKGR_PLLAR = CKGR_PLLAR_ONE | CKGR_PLLAR_MULA(0x13U) | CKGR_PLLAR_PLLACOUNT(0x3FU) | CKGR_PLLAR_DIVA(0x1U);
 	// We need to delay until PLLA is locked onto it's frequency
 	while(!(PMC->PMC_SR & PMC_SR_LOCKA)) {}
 	// Switch to the Main Clock while configuring PLLA
