@@ -20,6 +20,7 @@
 
 #include "sam.h"
 #include "peripherals/ts_pio.h"
+#include "peripherals/ts_pwm.h"
 
 // USB Pins:
 //	Data- on PB10 is DDM on UDP (System Peripheral)

@@ -94,11 +94,11 @@ void initialize_pio(void) {
 					 (TS_CART_ADDR10_PIO) | (TS_CART_ADDR11_PIO) | (TS_CART_ADDR12_PIO) | (TS_CART_ADDR13_PIO) | (TS_CART_NWE_PIO) | (TS_CART_NRD_PIO) |
 					 (TS_CART_NCS0_PIO);
 		
-	configure_pin_as_pio_output(TS_PWM_LED0_CONTROLLER,  TS_PWM_LED0_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED1_CONTROLLER,  TS_PWM_LED1_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER,  TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
-	configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER,  TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
-	
+	// Attach the LED pins to the PIO controller (not the PWM interface)
+	//configure_pin_as_pio_output(TS_PWM_LED0_CONTROLLER,  TS_PWM_LED0_PIO, INITIAL_STATE_LOW);
+	//configure_pin_as_pio_output(TS_PWM_LED1_CONTROLLER,  TS_PWM_LED1_PIO, INITIAL_STATE_LOW);
+	//configure_pin_as_pio_output(TS_PWM_LED2_CONTROLLER,  TS_PWM_LED2_PIO, INITIAL_STATE_LOW);
+	//configure_pin_as_pio_output(TS_PWM_LED3_CONTROLLER,  TS_PWM_LED3_PIO, INITIAL_STATE_HIGH);	// Provide heartbeat of initialization progress
 	
 	configure_pin_as_pio_output(TS_LINK_ENA_CONTROLLER,  TS_LINK_ENA_PIO, INITIAL_STATE_LOW);	// Disable the EXT Port voltage shifter until we're ready
 	configure_pin_as_pio_output(TS_CART_DOE_CONTROLLER,  TS_CART_DOE_PIO, INITIAL_STATE_HIGH);	// Disable the Cart Port voltage shifter until we're ready
@@ -117,10 +117,10 @@ void initialize_pio(void) {
 	//configure_pin_as_peripheral(TS_USB_DP_CONTROLLER,     TS_USB_DP_PIO,       TS_USB_DP_PERIPHERAL);
 	
 	// Attach the LEDs to the PWM interface
-	//configure_pin_as_peripheral(TS_PWM_LED0_CONTROLLER,   TS_PWM_LED0_PIO,     TS_PWM_LED0_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_PWM_LED1_CONTROLLER,   TS_PWM_LED1_PIO,     TS_PWM_LED1_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_PWM_LED2_CONTROLLER,   TS_PWM_LED2_PIO,     TS_PWM_LED2_PERIPHERAL);
-	//configure_pin_as_peripheral(TS_PWM_LED3_CONTROLLER,   TS_PWM_LED3_PIO,     TS_PWM_LED3_PERIPHERAL);
+	configure_pin_as_peripheral(TS_PWM_LED0_CONTROLLER,   TS_PWM_LED0_PIO,     TS_PWM_LED0_PERIPHERAL);
+	configure_pin_as_peripheral(TS_PWM_LED1_CONTROLLER,   TS_PWM_LED1_PIO,     TS_PWM_LED1_PERIPHERAL);
+	configure_pin_as_peripheral(TS_PWM_LED2_CONTROLLER,   TS_PWM_LED2_PIO,     TS_PWM_LED2_PERIPHERAL);
+	configure_pin_as_peripheral(TS_PWM_LED3_CONTROLLER,   TS_PWM_LED3_PIO,     TS_PWM_LED3_PERIPHERAL);
 		
 	// Attach the pins connected to the FTDI converter to the USART0 interface
 	//configure_pin_as_peripheral(TS_FTDI_TX_CONTROLLER,    TS_FTDI_TX_PIO,      TS_FTDI_TX_PERIPHERAL);
@@ -169,4 +169,18 @@ void initialize_pio(void) {
 	//configure_pin_as_peripheral(TS_CART_NWE_CONTROLLER,    TS_CART_NWE_PIO,    TS_CART_NWE_PERIPHERAL);
 	//configure_pin_as_peripheral(TS_CART_NRD_CONTROLLER,    TS_CART_NRD_PIO,    TS_CART_NRD_PERIPHERAL);
 	//configure_pin_as_peripheral(TS_CART_NCS0_CONTROLLER,   TS_CART_NCS0_PIO,   TS_CART_NCS0_PERIPHERAL);
+}
+
+void initialize_pwm(void) {
+	// Initialize all channels to the correct settings	
+	for (uint8_t i = 0; i < PWMCH_NUM_NUMBER; i++) {
+		// Using the PLL settings from above we then divide the clock down by 1024
+		PWM->PWM_CH_NUM[i].PWM_CMR = PWM_CMR_CPRE_MCK_DIV_1024;
+		// Using the clock division above we get a period of 0xEA (aka 234) * (1 / (120MHz / 1024)) = 8.53uS
+		PWM->PWM_CH_NUM[i].PWM_CPRD = 0xEA;
+		// Make sure the pin is off
+		set_pwm_off(i);
+	}
+	// Make sure all the PWM outputs are enabled
+	PWM->PWM_ENA = PWM_ENA_CHID0 | PWM_ENA_CHID1 | PWM_ENA_CHID2 | PWM_ENA_CHID3;
 }

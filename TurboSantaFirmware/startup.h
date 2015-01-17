@@ -27,5 +27,7 @@ void initialize_pmc_clocks(void);
 // Initialize all of the PIO pins
 void initialize_pio(void);
 
+// Initialize the PWM functions for the front LEDs
+void initialize_pwm(void);
 
 #endif /* STARTUP_H_ */

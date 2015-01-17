@@ -19,6 +19,7 @@ int main(void)
 	initialize_xtal();
 	initialize_pmc_clocks();
 	initialize_pio();
+	initialize_pwm();
 
     while (1) 
     {
