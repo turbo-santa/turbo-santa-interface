@@ -13,6 +13,7 @@
 
 void usart0_ftdi_putchar(const char c);
 void usart0_ftdi_putstring(const char *c);
+char usart0_ftdi_getchar(void);
 char digit_to_char(int digit);
 void print_hex_byte(int hex);
 

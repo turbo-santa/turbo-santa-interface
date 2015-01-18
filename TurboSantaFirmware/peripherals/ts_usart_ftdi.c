@@ -20,6 +20,12 @@ void usart0_ftdi_putstring(const char *c) {
 	}
 }
 
+char usart0_ftdi_getchar(void) {
+	while ( !(USART0->US_CSR & US_CSR_RXRDY)) {}
+		
+	return USART0->US_RHR;
+}
+
 char digit_to_char(int digit)
 {
 	if (digit >= 10) {
