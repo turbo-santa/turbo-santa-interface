@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #define PTYPE_READ           0x1
-#define PTYPE_BANK_SWITCH    0x2
+#define PTYPE_WRITE          0x2
 
 #pragma pack(push, 1)
 
@@ -18,15 +18,16 @@ typedef struct _READ_PKT {
 	unsigned short length;
 } READ_PKT, *PREAD_PKT;
 
-typedef struct _BANK_SWITCH_PKT {
+typedef struct _WRITE_PKT {
 	PKT_HEADER header;
-	unsigned char newBank;
-	unsigned char cartType;
-} BANK_SWITCH_PKT, *PBANK_SWITCH_PKT;
+	unsigned short startAddress;
+	unsigned short length;
+	unsigned char ramAddr;
+} WRITE_PKT, *PWRITE_PKT;
 
 typedef union _PKT_UNION {
 	READ_PKT read;
-	BANK_SWITCH_PKT bankSwitch;
+	WRITE_PKT write;
 } PKT_UNION, *PPKT_UNION;
 
 #define CART_HEADER_ADDRESS 0x100
@@ -110,10 +111,51 @@ static int write_packet(PPKT_HEADER packet, unsigned int packetSize) {
 	return 1;
 }
 
+static int write_byte_to_address(unsigned short address, unsigned char data) {
+	WRITE_PKT writePkt;
+
+	writePkt.header.ptype = PTYPE_WRITE;
+	writePkt.header.checksum = 0; // Calculated in write_packet()
+	writePkt.startAddress = address;
+	writePkt.length = 1;
+	writePkt.ramAddr = 0; // ROM
+	if (!write_packet(&writePkt.header, sizeof(writePkt))) {
+		fprintf(stderr, "Failed to write cart write request\n");
+		return 0;
+	}
+
+	return 1;
+}
+
+static int bank_switch(unsigned char bank, unsigned char cartType) {
+	switch (cartType)
+	{
+	// MBC1
+	case 0x1:
+	case 0x2:
+	case 0x3:
+
+	// MBC3
+	case 0xF:
+	case 0x10:
+	case 0x11:
+	case 0x12:
+	case 0x13:
+
+	// Guess for others
+	default:
+		return write_byte_to_address(0x2000, bank);
+
+	// MBC2
+	case 0x5:
+	case 0x6:
+		return write_byte_to_address(0x2100, bank);		
+	}
+}
+
 // bankData must be 0x4000 bytes
 static int read_bank(unsigned char bank, char* bankData, unsigned char cartType) {
 	READ_PKT readPkt;
-	BANK_SWITCH_PKT bankPkt;
 	DWORD bytesRead;
 	DWORD offset;
 
@@ -131,12 +173,7 @@ static int read_bank(unsigned char bank, char* bankData, unsigned char cartType)
 		// Cart type 0 doesn't have banks to switch
 		if (cartType != 0) {
 			// All other banks will require a switch
-			bankPkt.header.ptype = PTYPE_BANK_SWITCH;
-			bankPkt.header.checksum = 0; // Calculated in write_packet()
-			bankPkt.newBank = bank;
-			bankPkt.cartType = cartType;
-			if (!write_packet(&bankPkt.header, sizeof(bankPkt))) {
-				fprintf(stderr, "Failed to write bank switch request\n");
+			if (!bank_switch(bank, cartType)) {
 				return 0;
 			}
 		}

@@ -9,7 +9,7 @@
 #include "startup.h"
 
 #define PTYPE_READ        0x01
-#define PTYPE_BANK_SWITCH 0x02
+#define PTYPE_WRITE       0x02
 
 #pragma pack(push, 1)
 
@@ -22,17 +22,19 @@ typedef struct _READ_PKT {
 	PKT_HEADER header;
 	unsigned short startAddress;
 	unsigned short length;
+	unsigned char ramAddr;
 } READ_PKT, *PREAD_PKT;
 
-typedef struct _BANK_SWITCH_PKT {
+typedef struct _WRITE_PKT {
 	PKT_HEADER header;
-	unsigned char newBank;
-	unsigned char cartType;
-} BANK_SWITCH_PKT, *PBANK_SWITCH_PKT;
+	unsigned short startAddress;
+	unsigned short length;
+	unsigned char ramAddr;
+} WRITE_PKT, *PWRITE_PKT;
 
 typedef union _PKT_UNION {
 	READ_PKT read;
-	BANK_SWITCH_PKT bankSwitch;	
+	WRITE_PKT write;
 } PKT_UNION, *PPKT_UNION;
 
 #pragma pack(pop)
@@ -42,18 +44,26 @@ void readPacket(PPKT_UNION pktUnion)
 	pktUnion->read.header.ptype = usart0_ftdi_getchar();
 	pktUnion->read.header.checksum = usart0_ftdi_getchar();
 	
-	if (pktUnion->read.header.ptype == PTYPE_READ) {
+	if (pktUnion->read.header.ptype == PTYPE_READ ||
+	    pktUnion->read.header.ptype == PTYPE_WRITE) {
 		pktUnion->read.startAddress = usart0_ftdi_getchar() | usart0_ftdi_getchar() << 8;
 		pktUnion->read.length = usart0_ftdi_getchar() | usart0_ftdi_getchar() << 8;
-	}
-	else if (pktUnion->read.header.ptype == PTYPE_BANK_SWITCH) {
-		pktUnion->bankSwitch.newBank = usart0_ftdi_getchar();
-		pktUnion->bankSwitch.cartType = usart0_ftdi_getchar();
+		pktUnion->read.ramAddr = usart0_ftdi_getchar();
 	}
 }
 
 void writeAddress(unsigned short address, unsigned char data)
 {
+	set_pin_high(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO);
+	configure_pin_as_pio_output(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO, INITIAL_STATE_LOW);
+	configure_pin_as_pio_output(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO, INITIAL_STATE_LOW);
+	
 	// WR starts high and RD starts low
 	set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
 	set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
@@ -123,6 +133,16 @@ void writeAddress(unsigned short address, unsigned char data)
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
+	
+	set_pin_low(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO);
+	configure_pin_as_pio_input(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO);
 }
 
 char readAddress(unsigned short address)
@@ -201,50 +221,13 @@ int main(void)
 				usart0_ftdi_putchar(readAddress(pktUnion.read.startAddress + i));
 			}
 		}
-		else if (pktUnion.read.header.ptype == PTYPE_BANK_SWITCH) {
-			// TODO
+		else if (pktUnion.write.header.ptype == PTYPE_WRITE) {
+			unsigned short i;
 			
-			// Write to the ROM bank selectors
-			configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_HIGH);
-				configure_pin_as_pio_output(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_output(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO, INITIAL_STATE_LOW);
-			
-			// MBC1
-			if (pktUnion.bankSwitch.cartType == 0x1 || pktUnion.bankSwitch.cartType == 0x2 ||
-				pktUnion.bankSwitch.cartType == 0x2 || pktUnion.bankSwitch.cartType == 0x3) {
-					
-				writeAddress(0x2000, pktUnion.bankSwitch.newBank);
+			// Write each byte from the USART
+			for (i = 0; i < pktUnion.write.length; i++) {
+				writeAddress(pktUnion.write.startAddress + i, usart0_ftdi_getchar());
 			}
-			// MBC2
-			else if (pktUnion.bankSwitch.cartType == 0x5 || pktUnion.bankSwitch.cartType == 0x6) {
-				writeAddress(0x2100, pktUnion.bankSwitch.newBank);
-			}
-			// MBC3
-			else if (pktUnion.bankSwitch.cartType == 0xF || pktUnion.bankSwitch.cartType == 0x10 ||
-				pktUnion.bankSwitch.cartType == 0x11 || pktUnion.bankSwitch.cartType == 0x12 ||
-				pktUnion.bankSwitch.cartType == 0x13) {
-				writeAddress(0x2000, pktUnion.bankSwitch.newBank);
-			}
-			else {
-				// Just guess that it's at 2000h
-				writeAddress(0x2000, pktUnion.bankSwitch.newBank);
-			}
-			configure_pin_as_pio_output(TS_CART_DDIR_CONTROLLER,  TS_CART_DDIR_PIO, INITIAL_STATE_LOW);
-				configure_pin_as_pio_input(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA2_CONTROLLER, TS_CART_DATA2_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA3_CONTROLLER, TS_CART_DATA3_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA4_CONTROLLER, TS_CART_DATA4_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA5_CONTROLLER, TS_CART_DATA5_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA6_CONTROLLER, TS_CART_DATA6_PIO);
-				configure_pin_as_pio_input(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO);
 		}
-		
     }
 }
