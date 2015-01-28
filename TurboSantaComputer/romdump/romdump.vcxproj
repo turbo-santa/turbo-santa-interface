@@ -76,7 +76,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="helpers.cpp" />
+    <ClCompile Include="ram.cpp" />
+    <ClCompile Include="rom.cpp" />
     <ClCompile Include="romdump.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="gbdump.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

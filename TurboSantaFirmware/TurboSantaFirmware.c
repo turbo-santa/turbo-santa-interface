@@ -52,7 +52,7 @@ void readPacket(PPKT_UNION pktUnion)
 	}
 }
 
-void writeAddress(unsigned short address, unsigned char data)
+void writeAddress(unsigned short address, unsigned char data, unsigned char ramAddr)
 {
 	set_pin_high(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO);
 	configure_pin_as_pio_output(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO, INITIAL_STATE_LOW);
@@ -145,7 +145,7 @@ void writeAddress(unsigned short address, unsigned char data)
 	configure_pin_as_pio_input(TS_CART_DATA7_CONTROLLER, TS_CART_DATA7_PIO);
 }
 
-char readAddress(unsigned short address)
+char readAddress(unsigned short address, unsigned char ramAddr)
 {
 	set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
 	set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
@@ -218,7 +218,7 @@ int main(void)
 			
 			// Read each byte and send it over the USART
 			for (i = 0; i < pktUnion.read.length; i++) {
-				usart0_ftdi_putchar(readAddress(pktUnion.read.startAddress + i));
+				usart0_ftdi_putchar(readAddress(pktUnion.read.startAddress + i, pktUnion.read.ramAddr));
 			}
 		}
 		else if (pktUnion.write.header.ptype == PTYPE_WRITE) {
@@ -226,7 +226,7 @@ int main(void)
 			
 			// Write each byte from the USART
 			for (i = 0; i < pktUnion.write.length; i++) {
-				writeAddress(pktUnion.write.startAddress + i, usart0_ftdi_getchar());
+				writeAddress(pktUnion.write.startAddress + i, usart0_ftdi_getchar(), pktUnion.write.ramAddr);
 			}
 		}
     }
