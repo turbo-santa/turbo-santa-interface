@@ -68,8 +68,13 @@ void writeAddress(unsigned short address, unsigned char data, unsigned char ramA
 	set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
 	set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
 	
-	// Ignoring CS for now (might only be needed for RAM)
-	//set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	// Pull CS low to access RAM
+	if (ramAddr) {
+		set_pin_low(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	}
+	else {
+		set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	}
 	
 	// Write the destination address
 	write_to_address(address);
@@ -134,6 +139,9 @@ void writeAddress(unsigned short address, unsigned char data, unsigned char ramA
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
 	
+	// Pull CS high again
+	set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	
 	set_pin_low(TS_CART_DDIR_CONTROLLER, TS_CART_DDIR_PIO);
 	configure_pin_as_pio_input(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO);
 	configure_pin_as_pio_input(TS_CART_DATA1_CONTROLLER, TS_CART_DATA1_PIO);
@@ -147,9 +155,18 @@ void writeAddress(unsigned short address, unsigned char data, unsigned char ramA
 
 char readAddress(unsigned short address, unsigned char ramAddr)
 {
+	char data;
+	
 	set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
 	set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
-	set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	
+	// Pull CS low to access RAM
+	if (ramAddr) {
+		set_pin_low(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	}
+	else {
+		set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	}
 	
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
@@ -191,7 +208,11 @@ char readAddress(unsigned short address, unsigned char ramAddr)
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
 	
-	return read_from_data();
+	data = read_from_data();
+	
+	set_pin_high(TS_CART_NCS0_CONTROLLER, TS_CART_NCS0_PIO);
+	
+	return data;
 }
 
 int main(void)

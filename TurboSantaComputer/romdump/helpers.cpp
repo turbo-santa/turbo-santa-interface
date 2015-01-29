@@ -65,7 +65,6 @@ int write_data_to_address(unsigned short address, unsigned char *data, unsigned 
 		return 0;
 	}
 
-	printf("Writing %x to %x\n", *data, address);
 	if (!WriteFile(hSerialPort, data, length, &bytesWritten, NULL)) {
 		fprintf(stderr, "Failed to write to serial port: %d\n", GetLastError());
 		return 0;
