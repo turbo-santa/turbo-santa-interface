@@ -69,3 +69,6 @@ int write_data_to_address(unsigned short address, unsigned char *data, unsigned 
 int write_packet(PPKT_HEADER packet, unsigned int packetSize);
 void dump_region(void* buffer, unsigned int length);
 void dump_string(char* buffer, unsigned int length);
+int read_and_verify_crc32(unsigned int expectedCrc32);
+
+unsigned int crc32(unsigned int crc, const void *buf, unsigned int size);

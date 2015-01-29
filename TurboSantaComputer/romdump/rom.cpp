@@ -38,7 +38,10 @@ static int read_rom_bank(unsigned char bank, char* bankData, unsigned char cartT
 	READ_PKT readPkt;
 	DWORD bytesRead;
 	DWORD offset;
+	unsigned int crc;
+	int err;
 
+RetryRead:
 	if (bank == 0) {
 		readPkt.header.ptype = PTYPE_READ;
 		readPkt.header.checksum = 0; // Calculated in write_packet()
@@ -71,6 +74,8 @@ static int read_rom_bank(unsigned char bank, char* bankData, unsigned char cartT
 		}
 	}
 
+	crc = 0;
+
 	offset = 0;
 	while (offset < ROM_BANK_LENGTH) {
 		if (!ReadFile(hSerialPort, &bankData[offset], ROM_BANK_LENGTH - offset, &bytesRead, NULL)) {
@@ -78,7 +83,18 @@ static int read_rom_bank(unsigned char bank, char* bankData, unsigned char cartT
 			return 0;
 		}
 
+		crc = crc32(crc, &bankData[offset], bytesRead);
+			
 		offset += bytesRead;
+	}
+
+	err = read_and_verify_crc32(crc);
+	if (err < 0) {
+		return 0;
+	}
+	else if (err == 0) {
+		fprintf(stderr, "CRC mismatch; rereading...");
+		goto RetryRead;
 	}
 
 	return 1;

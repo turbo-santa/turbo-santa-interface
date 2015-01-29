@@ -77,7 +77,10 @@ int read_header(PCART_HEADER_AREA cartHeader) {
 	READ_PKT readPkt;
 	DWORD bytesRead;
 	DWORD offset;
+	unsigned int crc;
+	int err;
 
+RetryRead:
 	readPkt.header.ptype = PTYPE_READ;
 	readPkt.header.checksum = 0; // Calculated in write_packet()
 	readPkt.startAddress = CART_HEADER_ADDRESS;
@@ -88,6 +91,8 @@ int read_header(PCART_HEADER_AREA cartHeader) {
 		return 0;
 	}
 
+	crc = 0;
+
 	offset = 0;
 	while (offset < sizeof(*cartHeader)) {
 		if (!ReadFile(hSerialPort, &((char*)cartHeader)[offset], sizeof(*cartHeader) - offset, &bytesRead, NULL)) {
@@ -95,10 +100,42 @@ int read_header(PCART_HEADER_AREA cartHeader) {
 			return 0;
 		}
 
+		crc = crc32(crc, &((char*)cartHeader)[offset], bytesRead);
+
 		offset += bytesRead;
 	}
 
 	//dump_region(cartHeader, sizeof(*cartHeader));
 
+	err = read_and_verify_crc32(crc);
+	if (err < 0) {
+		return 0;
+	}
+	else if (err == 0) {
+		fprintf(stderr, "CRC mismatch; rereading...");
+		goto RetryRead;
+	}
+
 	return 1;
+}
+
+int read_and_verify_crc32(unsigned int expectedCrc32) {
+	int offset;
+	DWORD bytesRead;
+	union {
+		char bytes[4];
+		unsigned int crc32;
+	} crc;
+
+	offset = 0;
+	while (offset < sizeof(expectedCrc32)) {
+		if (!ReadFile(hSerialPort, &crc.bytes[offset], sizeof(crc) - offset, &bytesRead, NULL)) {
+			fprintf(stderr, "Failed to read CRC32: %d\n", GetLastError());
+			return -1;
+		}
+
+		offset += bytesRead;
+	}
+
+	return expectedCrc32 == crc.crc32;
 }

@@ -69,7 +69,10 @@ static int read_ram_bank(unsigned char bank, char* bankData, unsigned int bankDa
 	READ_PKT readPkt;
 	DWORD bytesRead;
 	DWORD offset;
+	unsigned int crc;
+	int err;
 
+RetryRead:
 	if (!ram_bank_switch(bank, cartType)) {
 		fprintf(stderr, "Failed to switch RAM banks\n");
 		return 0;
@@ -85,6 +88,8 @@ static int read_ram_bank(unsigned char bank, char* bankData, unsigned int bankDa
 		return 0;
 	}
 
+	crc = 0;
+
 	offset = 0;
 	while (offset < bankDataLength) {
 		if (!ReadFile(hSerialPort, &bankData[offset], bankDataLength - offset, &bytesRead, NULL)) {
@@ -92,7 +97,18 @@ static int read_ram_bank(unsigned char bank, char* bankData, unsigned int bankDa
 			return 0;
 		}
 
+		crc = crc32(crc, &bankData[offset], bytesRead);
+
 		offset += bytesRead;
+	}
+
+	err = read_and_verify_crc32(crc);
+	if (err < 0) {
+		return 0;
+	}
+	else if (err == 0) {
+		fprintf(stderr, "CRC mismatch; rereading...");
+		goto RetryRead;
 	}
 
 	return 1;

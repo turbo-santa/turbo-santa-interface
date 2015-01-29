@@ -39,6 +39,16 @@ typedef union _PKT_UNION {
 
 #pragma pack(pop)
 
+unsigned int
+crc32(unsigned int crc, const void *buf, unsigned int size);
+
+void sendCrc32(unsigned int crc) {
+	usart0_ftdi_putchar(crc & 0xFF);
+	usart0_ftdi_putchar(crc >> 8);
+	usart0_ftdi_putchar(crc >> 16);
+	usart0_ftdi_putchar(crc >> 24);
+}
+
 void readPacket(PPKT_UNION pktUnion)
 {
 	pktUnion->read.header.ptype = usart0_ftdi_getchar();
@@ -118,7 +128,6 @@ void writeAddress(unsigned short address, unsigned char data, unsigned char ramA
 	// Bring WR back up and RD down
 	set_pin_high(TS_CART_NWE_CONTROLLER, TS_CART_NWE_PIO);
 	set_pin_low(TS_CART_NRD_CONTROLLER, TS_CART_NRD_PIO);
-	
 	
 	NOPNOPNOPTOAST
 	NOPNOPNOPTOAST
@@ -231,23 +240,29 @@ int main(void)
 
     while (1) {
 		PKT_UNION pktUnion;
+		unsigned short i;
+		unsigned int crc;
 		
 		readPacket(&pktUnion);
 		
+		crc = 0;
+		
 		if (pktUnion.read.header.ptype == PTYPE_READ) {
-			unsigned short i;
-			
 			// Read each byte and send it over the USART
 			for (i = 0; i < pktUnion.read.length; i++) {
-				usart0_ftdi_putchar(readAddress(pktUnion.read.startAddress + i, pktUnion.read.ramAddr));
+				unsigned char data = readAddress(pktUnion.read.startAddress + i, pktUnion.read.ramAddr);
+				crc = crc32(crc, &data, 1);
+				usart0_ftdi_putchar(data);
 			}
+			
+			// Send the CRC32 at the end
+			sendCrc32(crc);
 		}
 		else if (pktUnion.write.header.ptype == PTYPE_WRITE) {
-			unsigned short i;
-			
 			// Write each byte from the USART
 			for (i = 0; i < pktUnion.write.length; i++) {
-				writeAddress(pktUnion.write.startAddress + i, usart0_ftdi_getchar(), pktUnion.write.ramAddr);
+				unsigned char data = usart0_ftdi_getchar();
+				writeAddress(pktUnion.write.startAddress + i, data, pktUnion.write.ramAddr);
 			}
 		}
     }
