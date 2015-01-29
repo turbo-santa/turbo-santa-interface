@@ -65,6 +65,33 @@ static int ram_bank_switch(unsigned char bank, unsigned char cartType) {
 	return write_data_to_address(RAM_BANK_NUMBER_ADDRESS, &bank, 1);
 }
 
+static int write_ram_bank(unsigned char bank, char* bankData, unsigned int bankDataLength, unsigned char cartType) {
+	WRITE_PKT writePkt;
+	DWORD bytesWritten;
+	
+	if (!ram_bank_switch(bank, cartType)) {
+		fprintf(stderr, "Failed to switch RAM banks\n");
+		return 0;
+	}
+
+	writePkt.header.ptype = PTYPE_WRITE;
+	writePkt.header.checksum = 0; // Calculated in write_packet()
+	writePkt.startAddress = RAM_BANK_ADDRESS;
+	writePkt.length = bankDataLength;
+	writePkt.ramAddr = 1; // RAM
+	if (!write_packet(&writePkt.header, sizeof(writePkt))) {
+		fprintf(stderr, "Failed to write RAM bank write request\n");
+		return 0;
+	}
+
+	if (!WriteFile(hSerialPort, bankData, bankDataLength, &bytesWritten, NULL)) {
+		fprintf(stderr, "Failed to write to serial port: %d\n", GetLastError());
+		return 0;
+	}
+
+	return 1;
+}
+
 static int read_ram_bank(unsigned char bank, char* bankData, unsigned int bankDataLength, unsigned char cartType) {
 	READ_PKT readPkt;
 	DWORD bytesRead;
@@ -112,6 +139,71 @@ RetryRead:
 	}
 
 	return 1;
+}
+
+int write_ram(FILE *file, CART_HEADER_AREA *header) {
+	char *bankBuffer;
+	unsigned char bankCount;
+	unsigned char i;
+	int bankLength;
+
+	// Enable RAM for writing
+	set_ram_enable(1);
+
+	switch (header->ramSize)
+	{
+	case 0x00:
+		// No RAM to dump
+		return 0;
+	case 0x01:
+		// 2KB RAM
+		bankCount = 1;
+		bankLength = 0x800;
+		break;
+	case 0x02:
+		// 8KB RAM
+		bankCount = 1;
+		bankLength = 0x2000;
+		break;
+	case 0x03:
+		// 32KB RAM in 4 banks
+		bankCount = 4;
+		bankLength = 0x2000;
+		break;
+	default:
+		fprintf(stderr, "Invalid RAM size\n");
+		return -4;
+	}
+
+	bankBuffer = (char*)malloc(bankLength);
+	if (bankBuffer == NULL) {
+		fprintf(stderr, "Failed to allocate bank memory\n");
+		return -5;
+	}
+
+	for (i = 0; i < bankCount; i++) {
+		printf("Writing RAM bank %d...", i);
+
+		fread(bankBuffer, bankLength, 1, file);
+
+		if (!write_ram_bank(i, bankBuffer, bankLength, header->cartType)) {
+			fprintf(stderr, "Failed to write RAM bank %d\n", i);
+			free(bankBuffer);
+			return -6;
+		}
+
+		printf("done\n");
+	}
+
+	// Disable RAM for safe power off
+	set_ram_enable(0);
+
+	// Set mode back to default
+	set_mode_select(0);
+
+	free(bankBuffer);
+
+	return 0;
 }
 
 int dump_ram(FILE *file, CART_HEADER_AREA *header) {

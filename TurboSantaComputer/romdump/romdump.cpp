@@ -6,34 +6,55 @@ int main(int argc, char* argv[])
 {
 	char path[MAX_PATH];
 	CART_HEADER_AREA header;
-	unsigned char dumpRom;
+	unsigned char rom, read;
 	FILE *file;
 	DCB port;
 	int err;
 
-	if (argc != 4) {
-		printf("Usage: romdump <ram/rom> <COM #> <target file>\n");
+	if (argc != 5) {
+		printf("Usage: romdump <read/write> <ram/rom> <COM #> <file>\n");
 		return -1;
 	}
 
-	if (!_stricmp(argv[1], "ram")) {
-		dumpRom = 0;
+	if (!_stricmp(argv[1], "read")) {
+		read = 1;
 	}
-	else if (!_stricmp(argv[1], "rom")) {
-		dumpRom = 1;
+	else if (!_stricmp(argv[1], "write")) {
+		read = 0;
+	}
+	else {
+		printf("Must specify: read or write\n");
+		return -1;
+	}
+
+	if (!_stricmp(argv[2], "ram")) {
+		rom = 0;
+	}
+	else if (!_stricmp(argv[2], "rom")) {
+		if (!read) {
+			printf("ROM is not writable\n");
+			return -1;
+		}
+
+		rom = 1;
 	}
 	else {
 		printf("Must specify dump type: ROM or RAM\n");
 		return -1;
 	}
 
-	file = fopen(argv[3], "wb");
+	if (read) {
+		file = fopen(argv[4], "wb");
+	}
+	else {
+		file = fopen(argv[4], "rb");
+	}
 	if (file == NULL) {
-		fprintf(stderr, "Failed to open output file: %d\n", errno);
+		fprintf(stderr, "Failed to open file: %d\n", errno);
 		return -1;
 	}
 
-	sprintf(path, "\\\\.\\%s", argv[2]);
+	sprintf(path, "\\\\.\\%s", argv[3]);
 	hSerialPort = CreateFile(path,
 		GENERIC_READ | GENERIC_WRITE | SYNCHRONIZE,
 		FILE_SHARE_READ,
@@ -61,8 +82,9 @@ int main(int argc, char* argv[])
 		return -8;
 	}
 
-	printf("Press ENTER to start dumping the %s...",
-		dumpRom ? "ROM" : "RAM");
+	printf("Press ENTER to start %s the %s...",
+		read ? "reading" : "writing",
+		rom ? "ROM" : "RAM");
 	(void) getchar();
 
 	if (!read_header(&header)) {
@@ -90,11 +112,14 @@ int main(int argc, char* argv[])
 	printf("\nHeader Checksum: %02x", header.headerChecksum);
 	printf("\nGlobal Checksum: %04x\n", header.globalChecksum);
 
-	if (dumpRom) {
+	if (rom) {
 		err = dump_rom(file, &header);
 	}
-	else {
+	else if (read) {
 		err = dump_ram(file, &header);
+	}
+	else {
+		err = write_ram(file, &header);
 	}
 
 	fflush(file);

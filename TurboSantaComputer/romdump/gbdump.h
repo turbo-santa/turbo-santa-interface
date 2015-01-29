@@ -63,6 +63,7 @@ C_ASSERT(sizeof(CART_HEADER_AREA) == CART_HEADER_LENGTH);
 int dump_rom(FILE *file, CART_HEADER_AREA *header);
 
 int dump_ram(FILE *file, CART_HEADER_AREA *header);
+int write_ram(FILE *file, CART_HEADER_AREA *header);
 
 int read_header(PCART_HEADER_AREA cartHeader);
 int write_data_to_address(unsigned short address, unsigned char *data, unsigned int length);
