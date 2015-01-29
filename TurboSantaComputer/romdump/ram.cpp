@@ -20,12 +20,46 @@ static int set_mode_select(unsigned char mode) {
 	return write_data_to_address(MODE_SELECT_ADDRESS, &mode, 1);
 }
 
+static int toggle_rtc_latch(void) {
+	int err = 0;
+	unsigned char data;
+	
+	data = 0;
+	err |= write_data_to_address(MODE_SELECT_ADDRESS, &data, 1);
+
+	data = 1;
+	err |= write_data_to_address(MODE_SELECT_ADDRESS, &data, 1);
+
+	return err;
+}
+
 static int ram_bank_switch(unsigned char bank, unsigned char cartType) {
-	if (bank == 0) {
-		set_mode_select(0);
-	}
-	else {
-		set_mode_select(1);
+	switch (cartType) {
+	case 0x02:
+	case 0x03:
+		// MBC1 needs mode select toggled
+		if (bank == 0) {
+			set_mode_select(0);
+		}
+		else {
+			set_mode_select(1);
+		}
+		break;
+
+		// MBC3 and MBC5 don't have anything special to toggle
+	case 0x10:
+	case 0x12:
+	case 0x13:
+
+	case 0x1A:
+	case 0x1B:
+	case 0x1D:
+	case 0x1E:
+		break;
+
+	default:
+		fprintf(stderr, "Cart type not supported: %x\n", cartType);
+		return 0;
 	}
 
 	return write_data_to_address(RAM_BANK_NUMBER_ADDRESS, &bank, 1);
