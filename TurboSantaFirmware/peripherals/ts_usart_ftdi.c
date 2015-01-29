@@ -9,7 +9,6 @@
 
 void usart0_ftdi_putchar(const char c) {
 	while ( !(USART0->US_CSR & US_CSR_TXRDY)) {}
-
 		
 	USART0->US_THR = c;
 }

@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 		fprintf(stderr, "Failed to get comm state: %d\n", GetLastError());
 		return -8;
 	}
-	if (!BuildCommDCB("baud=38400 parity=n data=8 stop=1", &port)) {
+	if (!BuildCommDCB("baud=115200 parity=n data=8 stop=1", &port)) {
 		fprintf(stderr, "Failed to build comm DCB: %d\n", GetLastError());
 		return -8;
 	}
