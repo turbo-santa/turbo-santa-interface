@@ -193,6 +193,7 @@ void initialize_pio(void) {
 	configure_pin_as_pio_input(TS_LINK_SI_CONTROLLER, TS_LINK_SI_PIO);
 	configure_pin_as_pio_input(TS_LINK_SO_CONTROLLER, TS_LINK_SO_PIO);
 	configure_pin_as_pio_input(TS_LINK_SD_CONTROLLER, TS_LINK_SD_PIO);
+	configure_pin_as_pio_input(TS_LINK_SC_CONTROLLER, TS_LINK_SC_PIO);
 	
 	// Attach the pins connected to the Game Cart's Data Bus to the SMC interface
 	//configure_pin_as_peripheral(TS_CART_DATA0_CONTROLLER, TS_CART_DATA0_PIO,   TS_CART_DATA0_PERIPHERAL);

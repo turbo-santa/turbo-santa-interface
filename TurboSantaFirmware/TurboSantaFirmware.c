@@ -281,6 +281,17 @@ char readAddress(unsigned short address, unsigned char ramAddr)
 	return data;
 }
 
+void scopeMe(void) {
+	int data = 0;
+	
+	data |= ((read_pin_level(TS_LINK_SI_CONTROLLER, TS_LINK_SI_PIO) != 0) ? 1 : 0) << 0;
+	data |= ((read_pin_level(TS_LINK_SO_CONTROLLER, TS_LINK_SO_PIO) != 0) ? 1 : 0) << 1;
+	data |= ((read_pin_level(TS_LINK_SC_CONTROLLER, TS_LINK_SC_PIO) != 0) ? 1 : 0) << 2;
+	data |= ((read_pin_level(TS_LINK_SD_CONTROLLER, TS_LINK_SD_PIO) != 0) ? 1 : 0) << 3;
+	
+	print_hex_byte(data);
+}
+
 int main(void)
 {
     /* Initialize the SAM system */
@@ -294,6 +305,10 @@ int main(void)
 	initialize_pwm();
 	initialize_usart0();
 	initialize_cart_pio();
+	
+	while (1) {
+		scopeMe();
+	}
 
     while (1) {
 		PKT_UNION pktUnion;
